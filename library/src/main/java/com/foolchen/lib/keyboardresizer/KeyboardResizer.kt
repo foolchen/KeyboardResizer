@@ -33,10 +33,11 @@ class KeyboardResizer(var activity: Activity?,
   private var keyboardHeight = -1
 
   private var keyboardState = KEYBOARD_STATE_CLOSED
+  private var windowSoftInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 
   private var keyboardHideRunnable = Runnable {
     keyboard?.visibility = View.GONE
-    activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    activity?.window?.setSoftInputMode(windowSoftInputMode)
   }
 
   init {
@@ -45,6 +46,10 @@ class KeyboardResizer(var activity: Activity?,
   }
 
   override fun onResume(activity: Activity?) {
+    // 获取当前Activity的键盘模式，以便于在键盘切换后能够还原到开发者设置的模式
+    // 如果无法获取到开发者设定的键盘模式，则使用默认值SOFT_INPUT_ADJUST_RESIZE
+    windowSoftInputMode = activity?.window?.attributes?.softInputMode ?: WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+
     content?.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListenerImpl)
   }
 
