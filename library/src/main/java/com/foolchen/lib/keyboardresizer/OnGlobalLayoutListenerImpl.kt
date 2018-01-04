@@ -16,8 +16,13 @@ private const val KEYBOARD_TOGGLE_THRESHOLD = 100
  * 2018/1/2
  * 下午5:28
  */
-class OnGlobalLayoutListenerImpl(private val content: ViewGroup?,
-    private val keyboardResizerCallBacks: KeyboardResizerCallBacks) : ViewTreeObserver.OnGlobalLayoutListener {
+class OnGlobalLayoutListenerImpl(var content: ViewGroup?,
+    var keyboardResizerCallBacks: KeyboardResizerCallBacks?) : ViewTreeObserver.OnGlobalLayoutListener {
+  ///////////////////////////////////////////////////////////////////////////
+  // 此处content和keyboardResizerCallbacks在必要时会被释放，防止发生内存泄露
+  // 故此处这两个值是可空的，在使用时要注意
+  ///////////////////////////////////////////////////////////////////////////
+
   private val mRect = Rect()
 
   override fun onGlobalLayout() {
@@ -32,7 +37,7 @@ class OnGlobalLayoutListenerImpl(private val content: ViewGroup?,
 //              "\nisStatusBarEnable = ${context.getStatusBarHeight() > 0} , statusBarHeight = ${context.getStatusBarHeight()}")
       val navigationBarHeight = if (context.checkNavigationBarEnable()) context.getNavigationBarHeight() else 0
       val keyboardHeight = context.getScreenHeight() - bottom - navigationBarHeight
-      keyboardResizerCallBacks.onKeyboardVisibilityChanged(
+      keyboardResizerCallBacks?.onKeyboardVisibilityChanged(
           keyboardHeight > KEYBOARD_TOGGLE_THRESHOLD, keyboardHeight)
     }
   }

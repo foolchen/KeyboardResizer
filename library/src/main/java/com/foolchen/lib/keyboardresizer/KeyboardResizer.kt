@@ -19,22 +19,27 @@ class KeyboardResizer(var activity: Activity?,
     var callbacks: KeyboardResizerCallBacks? = null) : KeyboardResizerLifeCallbacks, KeyboardResizerCallBacks {
   /** 键盘关闭 */
   private val KEYBOARD_STATE_CLOSED = 0
-  /***/
+  /** 键盘正在被覆盖（系统软键盘正在打开，但是尚未完全显示） */
   private val KEYBOARD_STATE_OVERLAYING = 1
   /** 键盘被系统软键盘覆盖 */
   private val KEYBOARD_STATE_OVERLAID = 2
   /** 键盘正在展示 */
   private val KEYBOARD_STATE_DISPLAY = 3
 
+  // 从Activity中找到根布局，通过监听根布局的高度变化来计算键盘高度
   private var content: ViewGroup? = activity?.findViewById(android.R.id.content)
+  // 用于对Activity的生命周期进行监听，便于对ViewTreeObserver进行处理，防止内存泄漏
   private val lifecycleCallbacksImpl: ActivityLifecycleCallbacksImpl = ActivityLifecycleCallbacksImpl(
       this)
   private val onGlobalLayoutListenerImpl = OnGlobalLayoutListenerImpl(content, this)
+  // 键盘高度，每次键盘高度变化后，该值都会改变，然后在键盘显示时重新设置键盘高度
   private var keyboardHeight = -1
-
+  // 键盘状态
   private var keyboardState = KEYBOARD_STATE_CLOSED
+  // 开发者针对Activity设置的键盘显示模式，在键盘切换完毕后都要将键盘显示模式重置回该值
   private var windowSoftInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 
+  // 该Runnable用于延时将键盘显示模式重置，防止布局抖动
   private var keyboardHideRunnable = Runnable {
     keyboard?.visibility = View.GONE
     activity?.window?.setSoftInputMode(windowSoftInputMode)
@@ -50,15 +55,26 @@ class KeyboardResizer(var activity: Activity?,
     // 如果无法获取到开发者设定的键盘模式，则使用默认值SOFT_INPUT_ADJUST_RESIZE
     windowSoftInputMode = activity?.window?.attributes?.softInputMode ?: WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 
+    // 由于在onPause()中将引用的布局和接口释放了，故此处需要重新设置
+    onGlobalLayoutListenerImpl.content = content
+    onGlobalLayoutListenerImpl.keyboardResizerCallBacks = this
+
     content?.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListenerImpl)
   }
 
   override fun onPause(activity: Activity?) {
+    // 在Activity不可见时，将延时执行的Runnable移除，防止内存泄露
     keyboard?.removeCallbacks(keyboardHideRunnable)
+
+    // 此处将OnGlobalLayoutListenerImpl引用的布局和接口释放，防止内存泄露
+    onGlobalLayoutListenerImpl.content = null
+    onGlobalLayoutListenerImpl.keyboardResizerCallBacks = null
+
     content?.viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListenerImpl)
   }
 
   override fun onDestroy(activity: Activity?) {
+    // 在Activity的onDestroy()方法中执行资源的释放
     activity?.application?.unregisterActivityLifecycleCallbacks(lifecycleCallbacksImpl)
     keyboard = null
     content = null
