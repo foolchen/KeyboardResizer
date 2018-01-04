@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.foolchen.lib.keyboardresizer.demo.MainActivity"
+    >
+
+
+  <EditText
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@android:color/darker_gray"
+      android:gravity="start|top"
+      android:hint="@string/input_here"
+      android:padding="10dp"
+      app:layout_constraintBottom_toTopOf="@id/bottom"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <android.support.constraint.ConstraintLayout
+      android:id="@+id/bottom"
+      android:layout_width="match_parent"
+      android:layout_height="45dp"
+      android:background="#B5B8BB"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toTopOf="@id/mock_keyboard"
+      >
+
+    <ImageView
+        android:id="@+id/expressions"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:src="@mipmap/ic_expressions_normal"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/keyboard"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/ic_hide_keyboard"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        />
+
+  </android.support.constraint.ConstraintLayout>
+
+  <TextView
+      android:id="@+id/mock_keyboard"
+      android:layout_width="match_parent"
+      android:layout_height="188dp"
+      android:background="@color/colorAccent"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      tools:visibility="visible"
+      />
+
+</android.support.constraint.ConstraintLayout>

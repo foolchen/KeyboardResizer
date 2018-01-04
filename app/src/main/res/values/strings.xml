@@ -1,0 +1,7 @@
+<resources>
+  <string name="app_name">KeyboardResizer</string>
+
+  <string name="immersive_mode_switch">沉浸模式</string>
+  <string name="input_here">此处输入内容</string>
+  <string name="keyboard_with_height">这是键盘\n高度%1$d</string>
+</resources>
