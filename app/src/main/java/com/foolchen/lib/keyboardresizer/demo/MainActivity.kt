@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   // 关闭系统软键盘
   private fun closeKeyboard() {
-    keyboardResizer.hideKeyboard()
+    keyboardResizer.hideSoftInput()
   }
 
   private fun invalidateExpressionButton() {

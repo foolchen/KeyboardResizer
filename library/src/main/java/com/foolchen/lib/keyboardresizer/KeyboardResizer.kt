@@ -117,10 +117,7 @@ class KeyboardResizer(var activity: Activity?,
     // 打开键盘
     keyboard?.visibility = View.VISIBLE
     // 关闭软键盘
-    activity?.currentFocus?.let {
-      val imm = it.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-      imm.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-    }
+    hideSoftInput()
     keyboardState = KEYBOARD_STATE_DISPLAY
   }
 
@@ -133,20 +130,28 @@ class KeyboardResizer(var activity: Activity?,
     // 将压缩布局方式设置为ADJUST_NOTHING，防止抖动
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     // 打开软键盘
-    activity?.currentFocus?.let {
-      val imm = it.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-      imm.showSoftInput(it, 0)
-    }
+    showSoftInput()
     keyboardState = KEYBOARD_STATE_OVERLAYING
   }
 
   fun hideKeyboard() {
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     keyboard?.visibility = View.GONE
+    keyboardState = KEYBOARD_STATE_CLOSED
+  }
+
+  fun hideSoftInput() {
     // 关闭软键盘
     activity?.currentFocus?.let {
       val imm = it.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
       imm.hideSoftInputFromWindow(it.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+    }
+  }
+
+  fun showSoftInput() {
+    activity?.currentFocus?.let {
+      val imm = it.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+      imm.showSoftInput(it, 0)
     }
   }
 
