@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   override fun onBackPressed() {
     if (mock_keyboard.visibility == View.VISIBLE) {
-      keyboardResizer.hideKeyboard()
+      keyboardResizer.hideCustomKeybaord()
       return
     }
     super.onBackPressed()
@@ -74,12 +74,12 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   // 打开表情键盘，并且关闭系统软键盘
   private fun showExpressionsWithKeyboardClose() {
-    keyboardResizer.showKeyboardWithSoftInputClose()
+    keyboardResizer.showCustomKeyboardWithSoftInputClose()
   }
 
   // 关闭表情键盘，并且打开系统软键盘
   private fun closeExpressionsWithKeyboardOpen() {
-    keyboardResizer.hideKeyboardWithSoftInputOpen()
+    keyboardResizer.hideCustomKeyboardWithSoftInputOpen()
   }
 
   // 关闭系统软键盘

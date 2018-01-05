@@ -15,7 +15,7 @@ import android.view.inputmethod.InputMethodManager
  * 下午5:03
  */
 class KeyboardResizer(var activity: Activity?,
-    var keyboard: View?,
+    var customKeyboard: View?,
     var callbacks: KeyboardResizerCallBacks? = null) : KeyboardResizerLifeCallbacks, KeyboardResizerCallBacks {
   /** 键盘关闭 */
   private val KEYBOARD_STATE_CLOSED = 0
@@ -38,7 +38,7 @@ class KeyboardResizer(var activity: Activity?,
 
   // 该Runnable用于延时将键盘显示模式重置，防止布局抖动
   private var keyboardHideRunnable = Runnable {
-    keyboard?.visibility = View.GONE
+    customKeyboard?.visibility = View.GONE
     activity?.window?.setSoftInputMode(windowSoftInputMode)
   }
 
@@ -58,7 +58,7 @@ class KeyboardResizer(var activity: Activity?,
   override fun onPause(activity: Activity?) {
     this@KeyboardResizer.activity = null
     // 在Activity不可见时，将延时执行的Runnable移除，防止内存泄露
-    keyboard?.removeCallbacks(keyboardHideRunnable)
+    customKeyboard?.removeCallbacks(keyboardHideRunnable)
 
     // 此处将OnGlobalLayoutListenerImpl引用的布局和接口释放，防止内存泄露
     onGlobalLayoutListenerImpl.content = null
@@ -69,7 +69,7 @@ class KeyboardResizer(var activity: Activity?,
 
   override fun onDestroy(activity: Activity?) {
     this@KeyboardResizer.activity = null
-    keyboard = null
+    customKeyboard = null
     content = null
     callbacks = null
   }
@@ -81,13 +81,13 @@ class KeyboardResizer(var activity: Activity?,
       keyboardState == KEYBOARD_STATE_OVERLAYING -> {
         keyboardState = KEYBOARD_STATE_OVERLAID
 
-        keyboard?.postDelayed(keyboardHideRunnable, 300)
+        customKeyboard?.postDelayed(keyboardHideRunnable, 300)
       }
 
       keyboardState == KEYBOARD_STATE_OVERLAID -> {
         // 如果软键盘覆盖自定义键盘时，软键盘被关闭，则此时自定义键盘也关闭
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        keyboard?.visibility = View.GONE
+        customKeyboard?.visibility = View.GONE
         keyboardState = KEYBOARD_STATE_CLOSED
       }
     }
@@ -98,34 +98,34 @@ class KeyboardResizer(var activity: Activity?,
   /**
    * 显示（自定义）键盘并关闭软键盘
    */
-  fun showKeyboardWithSoftInputClose() {
+  fun showCustomKeyboardWithSoftInputClose() {
     // 首先重置键盘的高度，使之与系统软键盘高度保持一致，防止抖动
     resizeKeyboard()
     // 然后，将压缩布局的方式设置为ADJUST_NOTHING，防止抖动
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     // 打开键盘
-    keyboard?.visibility = View.VISIBLE
+    customKeyboard?.visibility = View.VISIBLE
     // 关闭软键盘
     hideSoftInput()
     keyboardState = KEYBOARD_STATE_DISPLAY
-    keyboard?.removeCallbacks(keyboardHideRunnable)
+    customKeyboard?.removeCallbacks(keyboardHideRunnable)
   }
 
   /**
    * 关闭（自定义）键盘并打开软键盘
    */
-  fun hideKeyboardWithSoftInputOpen() {
+  fun hideCustomKeyboardWithSoftInputOpen() {
     // 将压缩布局方式设置为ADJUST_NOTHING，防止抖动
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     // 打开软键盘
     showSoftInput()
     keyboardState = KEYBOARD_STATE_OVERLAYING
-    keyboard?.removeCallbacks(keyboardHideRunnable)
+    customKeyboard?.removeCallbacks(keyboardHideRunnable)
   }
 
-  fun hideKeyboard() {
+  fun hideCustomKeybaord() {
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-    keyboard?.visibility = View.GONE
+    customKeyboard?.visibility = View.GONE
     keyboardState = KEYBOARD_STATE_CLOSED
   }
 
@@ -145,7 +145,7 @@ class KeyboardResizer(var activity: Activity?,
   }
 
   private fun resizeKeyboard() {
-    keyboard?.let {
+    customKeyboard?.let {
       var layoutParams = it.layoutParams
       if (layoutParams == null) {
         layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, keyboardHeight)
