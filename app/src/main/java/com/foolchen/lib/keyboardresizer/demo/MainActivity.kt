@@ -2,8 +2,6 @@ package com.foolchen.lib.keyboardresizer.demo
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import com.foolchen.lib.keyboardresizer.KeyboardResizer
 import com.foolchen.lib.keyboardresizer.KeyboardResizerCallBacks
@@ -22,7 +20,13 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   override fun onResume() {
     super.onResume()
+    keyboardResizer.onResume(this)
     invalidateExpressionButton()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    keyboardResizer.onPause(this)
   }
 
   override fun onBackPressed() {
@@ -31,38 +35,6 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
       return
     }
     super.onBackPressed()
-  }
-
-  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-    menuInflater.inflate(R.menu.menu_main_activity, menu)
-    return true
-  }
-
-  override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-    val decorView = window.decorView
-    menu?.findItem(R.id.immersive_mode_switch)?.isChecked = isSystemUIHidden(decorView)
-    return true
-  }
-
-
-  override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-    item?.let {
-      when (item.itemId) {
-        R.id.immersive_mode_switch -> {
-          // 切换沉浸模式
-          val decorView = window.decorView
-          if (isSystemUIHidden(decorView)) {
-            showSystemUI(decorView)
-          } else {
-            hideSystemUI(decorView)
-          }
-          invalidateOptionsMenu()
-          true
-        }
-        else -> false
-      }
-    }
-    return super.onOptionsItemSelected(item)
   }
 
   override fun onKeyboardVisibilityChanged(isVisible: Boolean, height: Int) {
