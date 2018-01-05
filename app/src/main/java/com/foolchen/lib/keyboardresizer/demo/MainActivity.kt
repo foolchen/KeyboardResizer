@@ -82,9 +82,20 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
     }
 
     keyboard.setOnClickListener {
-
       closeKeyboard()
       invalidateExpressionButton()
+    }
+
+    et.setOnClickListener {
+      closeExpressionsWithKeyboardOpen()
+      invalidateExpressionButton()
+    }
+
+    et.setOnFocusChangeListener { _, hasFocus ->
+      if (hasFocus) {
+        closeExpressionsWithKeyboardOpen()
+        invalidateExpressionButton()
+      }
     }
   }
 
