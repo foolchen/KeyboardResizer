@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   override fun onBackPressed() {
     if (mock_keyboard.visibility == View.VISIBLE) {
-      keyboardResizer.hideCustomKeybaord()
+      keyboardResizer.hideCustomKeyboard()
       return
     }
     super.onBackPressed()

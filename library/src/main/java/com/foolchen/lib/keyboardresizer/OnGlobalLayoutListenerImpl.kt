@@ -4,8 +4,8 @@ import android.graphics.Rect
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 
-// 键盘开关的阈值（单位dp）。在布局高度小于该值时，认为是无效变换
-private const val KEYBOARD_TOGGLE_THRESHOLD = 100
+// 键盘开关的阈值。在布局高度小于该值时，认为是无效变换
+private const val KEYBOARD_TOGGLE_THRESHOLD = 150
 
 /**
  * [ViewTreeObserver.OnGlobalLayoutListener]的实现类，通过布局高度的改变来计算系统软键盘的高度

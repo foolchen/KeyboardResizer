@@ -123,7 +123,7 @@ class KeyboardResizer(var activity: Activity?,
     customKeyboard?.removeCallbacks(keyboardHideRunnable)
   }
 
-  fun hideCustomKeybaord() {
+  fun hideCustomKeyboard() {
     activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     customKeyboard?.visibility = View.GONE
     keyboardState = KEYBOARD_STATE_CLOSED
