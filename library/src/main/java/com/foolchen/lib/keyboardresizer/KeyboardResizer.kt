@@ -59,6 +59,7 @@ class KeyboardResizer(var activity: Activity?,
     this@KeyboardResizer.activity = null
     // 在Activity不可见时，将延时执行的Runnable移除，防止内存泄露
     customKeyboard?.removeCallbacks(keyboardHideRunnable)
+    activity?.window?.setSoftInputMode(windowSoftInputMode)
 
     // 此处将OnGlobalLayoutListenerImpl引用的布局和接口释放，防止内存泄露
     onGlobalLayoutListenerImpl.content = null
@@ -86,7 +87,8 @@ class KeyboardResizer(var activity: Activity?,
 
       keyboardState == KEYBOARD_STATE_OVERLAID -> {
         // 如果软键盘覆盖自定义键盘时，软键盘被关闭，则此时自定义键盘也关闭
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        //customKeyboard?.removeCallbacks(keyboardHideRunnable)
+        activity?.window?.setSoftInputMode(windowSoftInputMode)
         customKeyboard?.visibility = View.GONE
         keyboardState = KEYBOARD_STATE_CLOSED
       }
