@@ -59,7 +59,11 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
     }
 
     et.setOnClickListener {
-      closeExpressionsWithKeyboardOpen()
+      if (mock_keyboard.visibility == View.VISIBLE) {
+        closeExpressionsWithKeyboardOpen()
+      } else {
+        keyboardResizer.showSoftInput()
+      }
       invalidateExpressionButton()
     }
 
@@ -79,7 +83,11 @@ class MainActivity : AppCompatActivity(), KeyboardResizerCallBacks {
 
   // 关闭表情键盘，并且打开系统软键盘
   private fun closeExpressionsWithKeyboardOpen() {
-    keyboardResizer.hideCustomKeyboardWithSoftInputOpen()
+    if (mock_keyboard.visibility == View.VISIBLE) {
+      keyboardResizer.hideCustomKeyboardWithSoftInputOpen()
+    } else {
+      keyboardResizer.showSoftInput()
+    }
   }
 
   // 关闭系统软键盘

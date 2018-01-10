@@ -24,6 +24,7 @@ class OnGlobalLayoutListenerImpl(var content: ViewGroup?,
   ///////////////////////////////////////////////////////////////////////////
 
   private val mRect = Rect()
+  private var mKeyboardVisible: Boolean? = null
 
   override fun onGlobalLayout() {
     content?.let {

@@ -35,6 +35,7 @@ class KeyboardResizer(var activity: Activity?,
   private var keyboardState = KEYBOARD_STATE_CLOSED
   // 开发者针对Activity设置的键盘显示模式，在键盘切换完毕后都要将键盘显示模式重置回该值
   private var windowSoftInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+  private var isKeyboardVisible: Boolean? = null
 
   // 该Runnable用于延时将键盘显示模式重置，防止布局抖动
   private var keyboardHideRunnable = Runnable {
@@ -53,6 +54,12 @@ class KeyboardResizer(var activity: Activity?,
     onGlobalLayoutListenerImpl.keyboardResizerCallBacks = this
 
     content?.viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListenerImpl)
+
+    if (keyboardState == KEYBOARD_STATE_DISPLAY) {
+      // 如果在自定义键盘处于显示状态下，打开了系统键盘，则将自定义键盘隐藏，防止冲突
+      keyboardState = KEYBOARD_STATE_CLOSED
+      keyboardHideRunnable.run()
+    }
   }
 
   override fun onPause(activity: Activity?) {
@@ -77,11 +84,12 @@ class KeyboardResizer(var activity: Activity?,
 
   override fun onKeyboardVisibilityChanged(isVisible: Boolean, height: Int) {
     when {
-      isVisible -> keyboardHeight = height
+      isVisible -> {
+        keyboardHeight = height
+      }
 
       keyboardState == KEYBOARD_STATE_OVERLAYING -> {
         keyboardState = KEYBOARD_STATE_OVERLAID
-
         customKeyboard?.postDelayed(keyboardHideRunnable, 300)
       }
 
@@ -93,7 +101,10 @@ class KeyboardResizer(var activity: Activity?,
         keyboardState = KEYBOARD_STATE_CLOSED
       }
     }
-    callbacks?.onKeyboardVisibilityChanged(isVisible, height)
+    if (isKeyboardVisible == null || isKeyboardVisible != isVisible) {
+      isKeyboardVisible = isVisible
+      callbacks?.onKeyboardVisibilityChanged(isVisible, height)
+    }
   }
 
 
