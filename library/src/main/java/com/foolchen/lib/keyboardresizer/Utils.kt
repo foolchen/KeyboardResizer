@@ -1,6 +1,10 @@
 package com.foolchen.lib.keyboardresizer
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.KeyCharacterMap
@@ -17,7 +21,38 @@ internal fun Context.checkNavigationBarEnable(): Boolean {
   val hasPermanentMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey()
   // 判断设备是否存在返回键
   val hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
-  return !hasPermanentMenuKey && !hasBackKey
+
+  if (isHuaWei()) {
+    return (!hasPermanentMenuKey && !hasBackKey || checkHuaWeiDeviceHasNavigationBar(
+        this)) && isNavigationBarShow(this)
+  } else {
+    return !hasPermanentMenuKey && !hasBackKey && isNavigationBarShow(this)
+  }
+}
+
+@SuppressLint("PrivateApi")
+//获取是否存在NavigationBar
+fun checkHuaWeiDeviceHasNavigationBar(context: Context): Boolean {
+  var hasNavigationBar = false
+  try {
+    val rs = context.resources
+    val id = rs.getIdentifier("config_showNavigationBar", "bool", "android")
+    if (id > 0) {
+      hasNavigationBar = rs.getBoolean(id)
+    }
+    val systemPropertiesClass = Class.forName("android.os.SystemProperties")
+    val m = systemPropertiesClass.getMethod("get", String::class.java)
+    val navBarOverride = m.invoke(systemPropertiesClass, "qemu.hw.mainkeys") as String
+    if ("1" == navBarOverride) {
+      hasNavigationBar = false
+    } else if ("0" == navBarOverride) {
+      hasNavigationBar = true
+    }
+  } catch (e: Exception) {
+
+  }
+
+  return hasNavigationBar
 }
 
 /**
@@ -70,3 +105,33 @@ internal fun Context.getScreenHeight(): Int {
   return metrics.heightPixels
 }
 
+/**
+ * 判断是否需是华为设备
+ */
+private fun isHuaWei() = Build.BRAND.contains("Huawei", true)
+
+//NavigationBar状态是否是显示
+private fun isNavigationBarShow(context: Context): Boolean {
+
+  val activity: Activity? = if (context is ContextWrapper) {
+    context.baseContext as? Activity?
+  } else {
+    context as? Activity?
+  }
+  if (activity != null) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      val display = activity.windowManager.defaultDisplay
+      val size = Point()
+      val realSize = Point()
+      display.getSize(size)
+      display.getRealSize(realSize)
+      realSize.y != size.y
+    } else {
+      val menu = ViewConfiguration.get(context).hasPermanentMenuKey()
+      val back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
+      !(menu || back)
+    }
+  } else {
+    return false
+  }
+}
