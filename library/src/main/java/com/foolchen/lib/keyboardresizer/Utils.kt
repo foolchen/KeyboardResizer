@@ -112,11 +112,9 @@ private fun isHuaWei() = Build.BRAND.contains("Huawei", true)
 
 //NavigationBar状态是否是显示
 private fun isNavigationBarShow(context: Context): Boolean {
-
-  val activity: Activity? = if (context is ContextWrapper) {
-    context.baseContext as? Activity?
-  } else {
-    context as? Activity?
+  var activity: Activity? = context as? Activity?
+  if (activity == null && context is ContextWrapper) {
+    activity = context.baseContext as? Activity?
   }
   if (activity != null) {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
