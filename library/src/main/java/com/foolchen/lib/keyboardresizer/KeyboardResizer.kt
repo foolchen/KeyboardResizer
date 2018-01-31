@@ -159,13 +159,15 @@ class KeyboardResizer(var activity: Activity?,
 
   private fun resizeKeyboard() {
     customKeyboard?.let {
-      var layoutParams = it.layoutParams
-      if (layoutParams == null) {
-        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, keyboardHeight)
-        it.layoutParams = layoutParams
-      } else if (layoutParams.height != keyboardHeight) {
-        layoutParams.height = keyboardHeight
-        it.layoutParams = layoutParams
+      if (keyboardHeight > 0) { // 有效高度时才进行键盘高度的重新设定，避免MATCH_PARENT、WRAP_CONTENT造成的告饶
+        var layoutParams = it.layoutParams
+        if (layoutParams == null) {
+          layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, keyboardHeight)
+          it.layoutParams = layoutParams
+        } else if (layoutParams.height != keyboardHeight) {
+          layoutParams.height = keyboardHeight
+          it.layoutParams = layoutParams
+        }
       }
     }
   }
